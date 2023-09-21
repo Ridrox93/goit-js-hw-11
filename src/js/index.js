@@ -101,9 +101,16 @@ function infiniteLogic() {
 }
 
 function smoothScroll() {
-  const elem = galleryDiv.firstElementChild.getBoundingClientRect();
-  window.scrollBy({
-    top: `${elem}`,
-    behavior: 'smooth',
-  });
+    
+  if (galleryDiv) {
+    const elemTop = galleryDiv.getBoundingClientRect().top;
+    const currentScroll = window.scrollY;
+
+    window.scrollBy({
+      top: elemTop - currentScroll, 
+      behavior: 'smooth',
+    });
+  } else {
+    console.error('Element with ID "galleryDiv" not found.');
+  }
 }
