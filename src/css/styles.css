@@ -29,6 +29,7 @@
   top: 0;
   width: 100%;
   margin-bottom: 15px;
+
 }
 
 .gallery {
@@ -81,4 +82,8 @@ img {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+.pointer {
+  cursor: pointer;
 }

@@ -82,6 +82,14 @@ searchForm.addEventListener('submit', async e => {
   e.preventDefault();
 
   searchText = e.target.elements.searchQuery.value.trim('');
+
+  if (searchText == "") { return Notify.info(
+      `Please, write your query!`, {
+    timeout: 1500,
+  }
+  )};
+
+
   if (searchText) {
     emptyGallery();
     resetAppState();
@@ -110,8 +118,16 @@ async function getMarkup() {
       response.data.totalHits / PHOTO_COUNT_PER_SCROLL
     );
 
-    if (photoPageNumber >= lastPhotoPageNumber) {
-      Notify.info(`All photos have been fetched.`);
+    if (response.totalHits < PHOTO_COUNT_PER_SCROLL) {
+   observer.unobserve(loadMoreEl);
+  
+}
+
+
+    if (photoPageNumber === lastPhotoPageNumber) {
+      Notify.info(`All photos have been fetched.`, {
+    timeout: 1000,
+  });
     }
 
     onSuccessGet(response);
