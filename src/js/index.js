@@ -9,6 +9,8 @@ const galleryDiv = document.querySelector('.gallery');
 const moreBtn = document.querySelector('.load-more');
 
 let searchText;
+let photoPageNumber = 1;
+
 const infiniteTrottle = throttle(infiniteLogic, 500);
 
 function prepareMarkup(response) {
@@ -39,10 +41,11 @@ function createMarkup(markup, element) {
   element.insertAdjacentHTML('beforeend', markup);
 }
 
-var lightbox = new SimpleLightbox('.gallery a', {
+const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
+
 
 searchForm.addEventListener('submit', async e => {
   e.preventDefault();
@@ -50,10 +53,9 @@ searchForm.addEventListener('submit', async e => {
   searchText = e.target.elements.searchQuery.value.trim('');
   if (searchText) {
     emptyGallery();
-    resetPage();
+    photoPageNumber = 1;
     resetResponseCounter();
     await getMarkup();
-    lightboxRefresh();
     smoothScroll();
     infiniteListener();
   }
@@ -64,13 +66,13 @@ function emptyGallery() {
 }
 
 
-function lightboxRefresh() {
-  lightbox.refresh();
-}
+// function lightboxRefresh() {
+//   lightbox.refresh();
+// }
 
 async function getMarkup() {
   try {
-    const response = await getUser(searchText);
+    const response = await getUser(searchText, photoPageNumber);
     if (!response) {
       throw new Error('mistake');
     }
@@ -80,6 +82,9 @@ async function getMarkup() {
     onSuccessGet(response);
     const preparation = prepareMarkup(response);
     createMarkup(preparation, galleryDiv);
+    photoPageNumber += 1;
+    lightbox.refresh();
+
   } catch (error) {
     window.removeEventListener('scroll', infiniteTrottle);
     throw new Error(error);
@@ -94,9 +99,12 @@ function infiniteLogic() {
   var scrollHeight = document.documentElement.scrollHeight;
   var scrollTop = document.documentElement.scrollTop;
   var clientHeight = document.documentElement.clientHeight;
+  console.log("scrollHeight", scrollHeight);
+  console.log("scrollTop", scrollTop);
+  console.log("clientHeight", clientHeight);
   if (scrollTop + clientHeight > scrollHeight - 500) {
     getMarkup();
-    lightboxRefresh();
+    // lightbox.refresh();
   }
 }
 
