@@ -32,6 +32,8 @@ function prepareMarkup(response) {
       <b>Downloads</b></br> ${object.downloads}
     </p>
   </div>
+  
+
 </a>`;
     })
     .join('');
