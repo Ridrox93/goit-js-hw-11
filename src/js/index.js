@@ -87,7 +87,6 @@ searchForm.addEventListener('submit', async e => {
     resetAppState();
     await getMarkup();
     smoothScroll();
-    scrollToTop();
   }
 });
 
