@@ -28,8 +28,7 @@ const loadMorePhotos = entries => {
       entry.isIntersecting && isPhotosPresent && !isAllPhotosFetched;
 
     if (shouldFireCallback) {
-      console.log('loading more...');
-
+     
       getMarkup();
     }
   });
