@@ -117,10 +117,6 @@ async function getMarkup() {
       observer.observe(loadMoreEl);
     } 
 
-console.log("lastPhotoPageNumber:", lastPhotoPageNumber);
-    console.log("lastPhotoPageNumber:",lastPhotoPageNumber);
-    
-
     if (photoPageNumber === lastPhotoPageNumber) {
       observer.unobserve(loadMoreEl);
       showInfoMessage();
