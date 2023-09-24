@@ -116,20 +116,22 @@ async function getMarkup() {
     if (response.data.totalHits > PHOTO_COUNT_PER_SCROLL) {
       observer.observe(loadMoreEl);
     } 
-
-    if (photoPageNumber === lastPhotoPageNumber) {
+     if (photoPageNumber === lastPhotoPageNumber) {
       observer.unobserve(loadMoreEl);
       showInfoMessage();
-    };
+    } else {  showSuccessMessage(response.data.totalHits);}
 
    
-    showSuccessMessage(response.data.totalHits);
+
     const preparation = prepareMarkup(response);
     createMarkup(preparation, galleryDiv);
 
     photoPageNumber += 1;
 
     lightbox.refresh();
+    
+   
+
   } catch (error) {
     throw new Error(error)
   };
