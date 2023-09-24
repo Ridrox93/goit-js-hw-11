@@ -1,8 +1,8 @@
 import getUser from './pixabay';
-import onSuccessGet, { resetResponseCounter } from './response';
 import SimpleLightbox from 'simplelightbox';
 import { Notify } from 'notiflix';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import { showFailureMessage, showSuccessMessage, showInfoMessage } from './response';
 
 const searchForm = document.querySelector('.search-form');
 const galleryDiv = document.querySelector('.gallery');
@@ -10,7 +10,6 @@ const loadMoreEl = document.querySelector('.load-more');
 
 let searchText;
 let photoPageNumber = 1;
-let isAllPhotosFetched = false;
 let lastPhotoPageNumber = null;
 let PHOTO_COUNT_PER_SCROLL = 40;
 
@@ -25,7 +24,7 @@ const loadMorePhotos = entries => {
     const isPhotosPresent = galleryDiv.hasChildNodes();
 
     const shouldFireCallback =
-      entry.isIntersecting && isPhotosPresent && !isAllPhotosFetched;
+      entry.isIntersecting && isPhotosPresent;
 
     if (shouldFireCallback) {
      
@@ -40,9 +39,7 @@ observer.observe(loadMoreEl);
 
 const resetAppState = () => {
   photoPageNumber = 1;
-  isAllPhotosFetched = false;
   lastPhotoPageNumber = null;
-  resetResponseCounter();
 };
 
 function prepareMarkup(response) {
@@ -103,34 +100,34 @@ function emptyGallery() {
 }
 
 async function getMarkup() {
-  if (lastPhotoPageNumber && photoPageNumber >= lastPhotoPageNumber) {
-    isAllPhotosFetched = true;
-    return;
-  }
-
+ 
   try {
     const response = await getUser(searchText, photoPageNumber);
-    if (!response) {
-      throw new Error('mistake');
+  
+    if (!response.data.hits.length) {
+      showFailureMessage();
+    
     }
 
     lastPhotoPageNumber = Math.ceil(
       response.data.totalHits / PHOTO_COUNT_PER_SCROLL
     );
 
-    if (response.totalHits < PHOTO_COUNT_PER_SCROLL) {
-   observer.unobserve(loadMoreEl);
-  
-}
+    if (response.data.totalHits > PHOTO_COUNT_PER_SCROLL) {
+      observer.observe(loadMoreEl);
+    } 
 
+console.log("lastPhotoPageNumber:", lastPhotoPageNumber);
+    console.log("lastPhotoPageNumber:",lastPhotoPageNumber);
+    
 
     if (photoPageNumber === lastPhotoPageNumber) {
-      Notify.info(`All photos have been fetched.`, {
-    timeout: 1000,
-  });
-    }
+      observer.unobserve(loadMoreEl);
+      showInfoMessage();
+    };
 
-    onSuccessGet(response);
+   
+    showSuccessMessage(response.data.totalHits);
     const preparation = prepareMarkup(response);
     createMarkup(preparation, galleryDiv);
 
@@ -138,8 +135,8 @@ async function getMarkup() {
 
     lightbox.refresh();
   } catch (error) {
-    throw new Error(error);
-  }
+    throw new Error(error)
+  };
 }
 
 function smoothScroll() {
